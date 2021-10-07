@@ -1,0 +1,10 @@
+package "checkFile"
+version "1.0"
+purpose "To verify file extensions"
+description "checkFile checks a file's extension and acesses if it matches the file type, if not the app returns the correct extension"
+versiontext "versiontext needed (optional)"
+
+option "file"       f "file name"                                   string optional
+option "batch"      b "file containing file names or paths"         string optional
+option "directory"  d "directory containing files to be checked"    string optional
+## falta fazer o help
