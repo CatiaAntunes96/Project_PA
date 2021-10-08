@@ -31,7 +31,15 @@ int main(int argc, char *argv[])
 
     int num_files = args_info.file_given;
 
-    for (int i = 0; i < num_files; i++)
+    char *filename = (char *)malloc(sizeof(char) * 2);
+
+    strcpy(filename, args_info.file_arg);
+    
+    printf("%s\n", filename);
+
+    printf("%d\n", num_files);
+
+    /*for (int i = 0; i < num_files; i++)
     {
         // falta ver como percorrer os argumentos da opção
         char *filename = args_info.file_arg;
@@ -55,7 +63,7 @@ int main(int argc, char *argv[])
 
         if(comp != 0) {
             ERROR(2, "[INFO] '%s': typ")
-        }*/
+        }
 
         for (int i = 0; i < 7; i++)
         {
@@ -105,7 +113,9 @@ int main(int argc, char *argv[])
         }
 
         fclose(fptr);
-    }
+    }*/
+
+    free(filename);
 
     cmdline_parser_free(&args_info);
 
