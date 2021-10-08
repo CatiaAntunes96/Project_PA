@@ -31,91 +31,90 @@ int main(int argc, char *argv[])
 
     int num_files = args_info.file_given;
 
-    char *filename = (char *)malloc(sizeof(char) * 2);
-
-    strcpy(filename, args_info.file_arg);
-    
-    printf("%s\n", filename);
-
-    printf("%d\n", num_files);
-
     /*for (int i = 0; i < num_files; i++)
+    {*/
+    //char *filename = (char *)malloc(sizeof(char) * 100);
+    //strcpy(filename, args_info.file_arg);
+
+    char *filename = args_info.file_arg[0];
+    FILE *fptr = NULL;
+    fptr = fopen(filename, "r");
+
+    if (fptr == NULL)
     {
-        // falta ver como percorrer os argumentos da opção
-        char *filename = args_info.file_arg;
-        FILE *fptr = NULL;
-        fptr = fopen(filename, "r");
+        ERROR(1, "cannot open file '%s'", filename);
+    }
 
-        if (fptr == NULL)
+    char *str_ext = strrchr(filename, 46);
+
+    int fd_out;
+    int fd_err;
+
+    pid_t pid = fork();
+
+    switch (pid)
+    {
+    case -1:
+        ERROR(5, "fork failed\n");
+        break;
+    case 0:
+
+        fd_out = open("./out.txt", O_CREAT | O_WRONLY | O_TRUNC | O_SYNC, 0777);
+        printf("%d fd apos criacao\n", fd_out);
+        if (fd_out == -1)
         {
-            ERROR(1, "cannot open file '%s'", filename);
+            ERROR(3, "Failed to create output file\n");
         }
 
-        char *str_ext = strrchr(filename, 46);
-
-        /*int comp;
-        int j = 0;
-        do
+        fd_err = open("./err.txt", O_CREAT | O_WRONLY | O_TRUNC | O_SYNC, 0777);
+        if (fd_err == -1)
         {
-            comp = strcmp(str_ext, extensions[j]);
-            j++;
-        } while (comp != 0 && j < 7);
-
-        if(comp != 0) {
-            ERROR(2, "[INFO] '%s': typ")
+            ERROR(3, "Failed to create error file\n");
         }
 
-        for (int i = 0; i < 7; i++)
+        dup2(fd_out, STDOUT_FILENO);
+        dup2(fd_err, STDERR_FILENO);
+
+        if (close(fd_out) == -1)
         {
-            if (strcmp(str_ext, extensions[i]) == 0)
-            {
-                break;
-            }
+            ERROR(4, "Failed to close file descriptor %d\n", fd_out);
         }
 
-        pid_t pid = fork();
-        switch (pid)
+        if (close(fd_err) == -1)
         {
-        case -1:
-            ERROR(5, "fork failed\n");
+            ERROR(4, "Failed to close file descriptor %d\n", fd_err);
+        }
+
+        execlp("file", "file", "-b", filename, NULL);
+        break;
+
+    default:
+        wait(NULL);
+    }
+
+    fclose(fptr);
+
+    int comp;
+    int j = 0;
+    do
+    {
+        comp = strcmp(str_ext, extensions[j]);
+        j++;
+    } while (comp != 0 && j < 7);
+
+    if (comp != 0)
+    {
+        ERROR(2, "[INFO] '%s': typ");
+    }
+
+    for (int i = 0; i < 7; i++)
+    {
+        if (strcmp(str_ext, extensions[i]) == 0)
+        {
             break;
-        case 0:
-            int fd_out = open("./out.txt", O_CREAT | O_EXCL);
-            if (fd_out == -1)
-            {
-                ERROR(3, "Failed to create output file\n");
-            }
-
-            int fd_err = open("./err.txt", O_CREAT | O_EXCL);
-            if (fd_err == -1)
-            {
-                ERROR(3, "Failed to create error file\n");
-            }
-
-            dup2(fd_out, STDOUT_FILENO);
-            dup2(fd_err, STDERR_FILENO);
-
-            if (close(fd_out) == -1)
-            {
-                ERROR(4, "Failed to close file descriptor %d\n", fd_out);
-            }
-
-            if (close(fd_err) == -1)
-            {
-                ERROR(4, "Failed to close file descriptor %d\n", fd_err);
-            }
-
-            execlp("file", "file", "-b", NULL);
-
-        default:
-            waitpid(pid, NULL, 0);
-            break;
         }
-
-        fclose(fptr);
-    }*/
-
-    free(filename);
+    }
+    //}
 
     cmdline_parser_free(&args_info);
 
