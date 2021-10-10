@@ -18,6 +18,8 @@
 #include "debug.h"
 #include "memory.h"
 
+char EXTENSIONS[7][6] = {"pdf", "gif", "jpg", "png", "mp4", "zip", "html"};
+
 int main(int argc, char *argv[])
 {
     struct gengetopt_args_info args_info;
@@ -27,14 +29,19 @@ int main(int argc, char *argv[])
         exit(1);
     }
 
-    char extensions[7][6] = {".pdf", ".gif", ".jpg", ".png", ".mp4", ".zip", ".html"};
+    // int num_files = args_info.file_given;
 
-    int num_files = args_info.file_given;
+    // char **files_list = NULL;
+    // files_list = MALLOC(sizeof(char *) * num_files);
 
-    /*for (int i = 0; i < num_files; i++)
-    {*/
-    //char *filename = (char *)malloc(sizeof(char) * 100);
-    //strcpy(filename, args_info.file_arg);
+    // for (int i = 0; i < num_files; i++)
+    // {
+    //     char *filename = MALLOC(sizeof(char) * (strlen(args_info.file_arg[i]) + 1));
+    //     strcpy(filename, args_info.file_arg[i]);
+    //     FREE(filename);
+    // }
+
+    // FREE(files_list);
 
     char *filename = args_info.file_arg[0];
     FILE *fptr = NULL;
@@ -45,10 +52,29 @@ int main(int argc, char *argv[])
         ERROR(1, "cannot open file '%s'", filename);
     }
 
+    fclose(fptr);
+
     char *str_ext = strrchr(filename, 46);
+    char new_str_ext[(int)strlen(str_ext)];
+
+    if (str_ext == NULL)
+    {
+        str_ext = "";
+        printf("[WARNING] '%s' filename does not have an extension\n", filename);
+    }
+    else
+    {
+        for (int i = 0; i < (int)strlen(str_ext); i++)
+        {
+            new_str_ext[i] = str_ext[i + 1];
+        }
+    }
 
     int fd_out;
     int fd_err;
+
+    char *out_filename = "./out.txt";
+    char *err_filename = "./err.txt";
 
     pid_t pid = fork();
 
@@ -59,14 +85,14 @@ int main(int argc, char *argv[])
         break;
     case 0:
 
-        fd_out = open("./out.txt", O_CREAT | O_WRONLY | O_TRUNC | O_SYNC, 0777);
-        printf("%d fd apos criacao\n", fd_out);
+        fd_out = open(out_filename, O_CREAT | O_WRONLY | O_TRUNC | O_SYNC, 0777);
+
         if (fd_out == -1)
         {
             ERROR(3, "Failed to create output file\n");
         }
 
-        fd_err = open("./err.txt", O_CREAT | O_WRONLY | O_TRUNC | O_SYNC, 0777);
+        fd_err = open(err_filename, O_CREAT | O_WRONLY | O_TRUNC | O_SYNC, 0777);
         if (fd_err == -1)
         {
             ERROR(3, "Failed to create error file\n");
@@ -92,29 +118,58 @@ int main(int argc, char *argv[])
         wait(NULL);
     }
 
-    fclose(fptr);
+    fd_out = open(out_filename, O_RDONLY);
+
+    if (fd_out == -1)
+    {
+        ERROR(7, "Failed to open outuput file");
+    }
+
+    char str_type[5] = "";
+    char buffer;
+
+    for (int i = 0; i < 5; ++i)
+    {
+        if (read(fd_out, &buffer, 1) == -1)
+        {
+            ERROR(6, "Failed to read from output file");
+        }
+        if (buffer == 0x32)
+        {
+            break;
+        }
+        str_type[i] += tolower(buffer);
+    }
+
+    if (close(fd_out) == -1)
+    {
+        ERROR(7, "Failed to close output file");
+    }
 
     int comp;
     int j = 0;
     do
     {
-        comp = strcmp(str_ext, extensions[j]);
+        comp = strcmp(str_type, EXTENSIONS[j]);
         j++;
     } while (comp != 0 && j < 7);
 
     if (comp != 0)
     {
-        ERROR(2, "[INFO] '%s': typ");
+        printf("[INFO] '%s': type '%s' is not supported by checkFile\n", filename, str_type);
+        exit(1);
     }
 
-    for (int i = 0; i < 7; i++)
+    if (strcmp(str_type, new_str_ext) != 0)
     {
-        if (strcmp(str_ext, extensions[i]) == 0)
-        {
-            break;
-        }
+        printf("[MISMATCH] '%s': extension is '%s', file type is '%s'\n", filename, new_str_ext, str_type);
     }
-    //}
+    else
+    {
+        printf("[OK] '%s': extension '%s' matches file type '%s'\n", filename, new_str_ext, str_type);
+    }
+
+    // ler o out.txt para uma string e fazer a comparação com o filename e com o array de extensoes suportadas
 
     cmdline_parser_free(&args_info);
 
