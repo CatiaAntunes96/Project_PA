@@ -134,12 +134,15 @@ int main(int argc, char *argv[])
         {
             ERROR(6, "Failed to read from output file");
         }
-        if (buffer == 0x32)
+        if (buffer == 32)
         {
             break;
-        }
+        } 
+
         str_type[i] += tolower(buffer);
     }
+
+    printf("%s\n", str_type);
 
     if (close(fd_out) == -1)
     {
