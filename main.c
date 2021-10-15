@@ -28,9 +28,11 @@ char *G_extensions[NUM_EXT] = {"pdf", "gif", "jpg", "png", "mp4", "zip", "html"}
 
 int file_check(char *filename);
 
+int path_check(char *filename);
+
 char *extract(char *filename);
 
-void exec_call(char *filename, char *out_filename);
+void exec_call(char *out_filename, char *filename, char *command, char *options);
 
 char *get_file_type(char *out_filename);
 
@@ -38,7 +40,7 @@ void type_check(char *str_type, char *filename);
 
 void cmp_ext_type(char *ext, char *type, char *filename);
 
-void read_batch(char *filename);
+char **read_batch(char *filename, int *total);
 
 //char **file_list(char **args, int n_args);
 
@@ -53,6 +55,8 @@ int main(int argc, char *argv[])
 
     if (args_info.file_given > 0)
     {
+
+        // Number of files passed by prompt
         int num_files = args_info.file_given;
 
         char **files_list = NULL;
@@ -62,32 +66,47 @@ int main(int argc, char *argv[])
 
         for (i = 0; i < num_files; i++)
         {
+            // array of filenames recieved from terminal
             files_list[i] = (char *)MALLOC(sizeof(char) * (strlen(args_info.file_arg[i]) + 1));
             strcpy(files_list[i], args_info.file_arg[i]);
         }
 
         for (i = 0; i < num_files; ++i)
         {
+            // indiviual filename from filenames array
             char *filename = files_list[i];
 
+            // filaneme for stdout redirect
             char *output_filename = "./out.txt";
 
-            if (file_check(filename) > 0)
+            // command for exec call
+            char *comm = "file";
+
+            // options for the command called on exec
+            char *opt = "-bE";
+
+            if (!file_check(filename))
             {
                 continue;
             }
+
+            // string containing the extension portion of the filename
             char *extension = extract(filename);
             if (extension == NULL)
             {
                 continue;
             }
 
-            exec_call(filename, output_filename);
+            // performs a system call on the command and options passed by argument and redirects stdout to an output file passed by argument as well
+            exec_call(output_filename, filename, comm, opt);
 
+            // reads from output file of command called by exec and retrives the extension to string
             char *file_type = get_file_type(output_filename);
 
+            // checks if the file type is supported by the app, runs the string against an array of predefined extensions
             type_check(file_type, filename);
 
+            // basic comparison between the extension on the filename passed by the user and the file type obtained from the file command
             cmp_ext_type(extension, file_type, filename);
         }
 
@@ -99,12 +118,48 @@ int main(int argc, char *argv[])
         file_check(batch_filename);
 
         char *btype = "./btype.txt";
+        char *comm = "file";
+        char *opt = "-bE";
 
-        exec_call(batch_filename, btype);
+        exec_call(btype, batch_filename, comm, opt);
+
         char *batch_type = get_file_type(btype);
+
         cmp_ext_type(batch_type, "ascii", batch_filename);
 
-        read_batch(batch_filename);
+        char **files_list = NULL;
+        int n_files = 0;
+        int i;
+
+        files_list = read_batch(batch_filename, &n_files);
+
+        for (i = 0; i < n_files; ++i)
+        {
+            char *filename = files_list[i];
+            char *output_filename = "./out.txt";
+
+            if (!file_check(filename))
+            {
+                continue;
+            }
+            char *extension = extract(filename);
+            if (extension == NULL)
+            {
+                continue;
+            }
+
+            exec_call(output_filename, filename, comm, opt);
+
+            char *file_type = get_file_type(output_filename);
+
+            type_check(file_type, filename);
+
+            cmp_ext_type(extension, file_type, filename);
+
+            FREE(filename);
+        }
+
+        FREE(files_list);
     }
     else
     {
@@ -123,11 +178,11 @@ int file_check(char *filename)
     if (fptr == NULL)
     {
         fprintf(stderr, "[ERROR] cannot open file '%s' -- %s\n", filename, strerror(errno));
-        return 1;
+        return 0;
     }
 
     fclose(fptr);
-    return 0;
+    return 1;
 }
 
 // char **file_list(char **args, int n_args)
@@ -171,7 +226,7 @@ char *extract(char *filename)
     return str_ext;
 }
 
-void exec_call(char *filename, char *out_filename)
+void exec_call(char *out_filename, char *filename, char *command, char *options)
 {
     pid_t pid = fork();
 
@@ -180,7 +235,7 @@ void exec_call(char *filename, char *out_filename)
     switch (pid)
     {
     case -1:
-        WARNING("[WARNING] fork() failed");
+        WARNING("fork() failed");
         break;
     case 0:
 
@@ -191,7 +246,15 @@ void exec_call(char *filename, char *out_filename)
             WARNING("Redirecting fault");
         }
 
-        execlp("file", "file", "-bE", filename, NULL);
+        if (path_check(filename))
+        {
+            execl(command, command, options, filename, NULL);
+        }
+        else
+        {
+            execlp(command, command, options, filename, NULL);
+        }
+
         break;
 
     default:
@@ -249,7 +312,7 @@ void type_check(char *str_type, char *filename)
 
     if (comp != 0)
     {
-        printf("[INFO] '%s': type '%s' is not supported by checkFile\n", filename, str_type);
+        fprintf(stdout, "[INFO] '%s': type '%s' is not supported by checkFile\n", filename, str_type);
         exit(1);
     }
 }
@@ -266,12 +329,13 @@ void cmp_ext_type(char *ext, char *type, char *filename)
     }
 }
 
-void read_batch(char *filename)
+char **read_batch(char *filename, int *total)
 {
     char **files_list = NULL;
     char ch;
     int n_lines = 0;
     int i;
+    *total = 0;
 
     FILE *f = fopen(filename, "r");
 
@@ -302,17 +366,29 @@ void read_batch(char *filename)
             {
                 files_list[i] = (char *)MALLOC(sizeof(char) * ((int)nread + 1));
                 strcpy(files_list[i], line);
+                (*total)++;
                 DEBUG("%s", files_list[i]);
             }
         }
 
         FREE(line);
 
-        FREE(files_list);
-
         if (fclose(f) == -1)
         {
-            WARNING("[WARNING] Failed to close batch file.");
+            WARNING("Failed to close batch file.");
         }
+    }
+    return files_list;
+}
+
+int path_check(char *filename)
+{
+    if (strchr(filename, 47) == NULL)
+    {
+        return 1;
+    }
+    else
+    {
+        return 0;
     }
 }

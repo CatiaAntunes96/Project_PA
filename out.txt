@@ -1,1 +1,1 @@
-ASCII text
+[INFO] 'ola.txt': type '' is not supported by checkFile
