@@ -83,7 +83,7 @@ int main(int argc, char *argv[])
             char *comm = "file";
 
             // options for the command called on exec
-            char *opt = "-bE";
+            char *opt = "-b";
 
             if (!file_check(filename))
             {
@@ -108,7 +108,10 @@ int main(int argc, char *argv[])
 
             // basic comparison between the extension on the filename passed by the user and the file type obtained from the file command
             cmp_ext_type(extension, file_type, filename);
+
+            FREE(filename);
         }
+
 
         FREE(files_list);
     }
@@ -150,8 +153,12 @@ int main(int argc, char *argv[])
 
             exec_call(output_filename, filename, comm, opt);
 
+            
+
             char *file_type = get_file_type(output_filename);
 
+        
+        
             type_check(file_type, filename);
 
             cmp_ext_type(extension, file_type, filename);
@@ -228,6 +235,7 @@ char *extract(char *filename)
 
 void exec_call(char *out_filename, char *filename, char *command, char *options)
 {
+
     pid_t pid = fork();
 
     FILE *fout = NULL;
@@ -238,6 +246,7 @@ void exec_call(char *out_filename, char *filename, char *command, char *options)
         WARNING("fork() failed");
         break;
     case 0:
+        
 
         fout = freopen(out_filename, "w+", stdout);
 
@@ -246,15 +255,8 @@ void exec_call(char *out_filename, char *filename, char *command, char *options)
             WARNING("Redirecting fault");
         }
 
-        if (path_check(filename))
-        {
-            execl(command, command, options, filename, NULL);
-        }
-        else
-        {
-            execlp(command, command, options, filename, NULL);
-        }
-
+        execlp(command, command, options, filename, NULL);
+        
         break;
 
     default:
@@ -312,7 +314,7 @@ void type_check(char *str_type, char *filename)
 
     if (comp != 0)
     {
-        fprintf(stdout, "[INFO] '%s': type '%s' is not supported by checkFile\n", filename, str_type);
+        printf("[INFO] '%s': type '%s' is not supported by checkFile\n", filename, str_type);
         exit(1);
     }
 }
