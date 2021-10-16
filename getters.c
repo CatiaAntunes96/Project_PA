@@ -16,7 +16,8 @@ char **list_files(char **args, int n_args)
 {
     int i;
 
-    char **files_array = (char **)MALLOC(sizeof(char *) * n_args);
+    char **files_array = NULL;
+    files_array = (char **)MALLOC(sizeof(char *) * n_args);
 
     for (i = 0; i < n_args; ++i)
     {

@@ -1,8 +1,8 @@
 /**
  * @file main.c
- * @brief Description
- * @date 2018-1-1
- * @author name of author
+ * @brief CLI checkFile
+ * @date 2021-11-06
+ * @author Cátia Antunes & Inês Machado
  */
 
 #include <stdio.h>
@@ -47,13 +47,6 @@ int main(int argc, char *argv[])
 
         char *filename = NULL;
 
-        // for (i = 0; i < num_files; i++)
-        // {
-        //     // array of filenames recieved from terminal
-        //     files_list[i] = (char *)MALLOC(sizeof(char) * (strlen(args_info.file_arg[i]) + 1));
-        //     strcpy(files_list[i], args_info.file_arg[i]);
-        // }
-
         // command for exec call
         char *comm = "file";
 
@@ -84,7 +77,10 @@ int main(int argc, char *argv[])
             char *file_type = get_file_type(G_output_filename);
 
             // checks if the file type is supported by the app, runs the string against an array of predefined extensions
-            type_check(file_type, filename);
+            if (!type_check(file_type, filename))
+            {
+                continue;
+            }
 
             // basic comparison between the extension on the filename passed by the user and the file type obtained from the file command
             cmp_ext_type(extension, file_type, filename);
@@ -115,6 +111,7 @@ int main(int argc, char *argv[])
         int i;
 
         files_list = read_batch(batch_filename, &n_files);
+        printf("[INFO] analyzing files listed in '%s'", batch_filename);
 
         for (i = 0; i < n_files; ++i)
         {
@@ -134,7 +131,10 @@ int main(int argc, char *argv[])
 
             char *file_type = get_file_type(G_output_filename);
 
-            type_check(file_type, filename);
+            if (!type_check(file_type, filename))
+            {
+                continue;
+            }
 
             cmp_ext_type(extension, file_type, filename);
 
@@ -142,6 +142,7 @@ int main(int argc, char *argv[])
         }
 
         FREE(files_list);
+        printf("[SUMMARY] files analyzed:%d; files OK: ; files MISMATCH: ; errors: ", n_files);
     }
     else
     {
@@ -155,6 +156,7 @@ int main(int argc, char *argv[])
         {
             exit(1);
         }
+        printf("[INFO] analyzing files of directory '%s'", dirname);
 
         exec_call(dir_out, dirname, comm, opt);
 
@@ -187,13 +189,17 @@ int main(int argc, char *argv[])
 
             char *file_type = get_file_type(G_output_filename);
 
-            type_check(file_type, filename);
+            if (!type_check(file_type, filename))
+            {
+                continue;
+            }
 
             cmp_ext_type(extension, file_type, filename);
 
             FREE(filename);
         }
         FREE(files_list);
+        printf("[SUMMARY] files analyzed:%d; files OK: ; files MISMATCH: ; errors: ", n_files);
     }
 
     cmdline_parser_free(&args_info);

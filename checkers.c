@@ -55,7 +55,7 @@ int dir_check(char *dirname)
     return 1;
 }
 
-void type_check(char *str_type, char *filename)
+int type_check(char *str_type, char *filename)
 {
     int comp;
     int j = 0;
@@ -69,8 +69,9 @@ void type_check(char *str_type, char *filename)
     if (comp != 0)
     {
         printf("[INFO] '%s': type '%s' is not supported by checkFile\n", filename, str_type);
-        exit(1);
+        return 0;
     }
+    return 1;
 }
 
 void cmp_ext_type(char *ext, char *type, char *filename)
