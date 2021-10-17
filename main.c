@@ -111,7 +111,8 @@ int main(int argc, char *argv[])
         int i;
 
         files_list = read_batch(batch_filename, &n_files);
-        printf("[INFO] analyzing files listed in '%s'", batch_filename);
+        DEBUG("Valor por ref: %d", n_files);
+        printf("[INFO] analyzing files listed in '%s'\n", batch_filename);
 
         for (i = 0; i < n_files; ++i)
         {
@@ -122,6 +123,7 @@ int main(int argc, char *argv[])
                 continue;
             }
             char *extension = extract(filename);
+            DEBUG("extension recebida pela função: %s", extension);
             if (extension == NULL)
             {
                 continue;
@@ -142,7 +144,7 @@ int main(int argc, char *argv[])
         }
 
         FREE(files_list);
-        printf("[SUMMARY] files analyzed:%d; files OK: ; files MISMATCH: ; errors: ", n_files);
+        printf("[SUMMARY] files analyzed:%d; files OK: ; files MISMATCH: ; errors: \n", n_files);
     }
     else
     {
@@ -156,7 +158,7 @@ int main(int argc, char *argv[])
         {
             exit(1);
         }
-        printf("[INFO] analyzing files of directory '%s'", dirname);
+        printf("[INFO] analyzing files of directory '%s'\n", dirname);
 
         exec_call(dir_out, dirname, comm, opt);
 
@@ -199,7 +201,7 @@ int main(int argc, char *argv[])
             FREE(filename);
         }
         FREE(files_list);
-        printf("[SUMMARY] files analyzed:%d; files OK: ; files MISMATCH: ; errors: ", n_files);
+        printf("[SUMMARY] files analyzed:%d; files OK: ; files MISMATCH: ; errors: \n", n_files);
     }
 
     cmdline_parser_free(&args_info);

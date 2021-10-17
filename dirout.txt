@@ -1,8 +1,5 @@
-/home/user/Desktop/ficha02/labs/lab2
-/home/user/Desktop/ficha02/labs/lab2/debug.c
-/home/user/Desktop/ficha02/labs/lab2/main.o
-/home/user/Desktop/ficha02/labs/lab2/makefile
-/home/user/Desktop/ficha02/labs/lab2/debug.o
-/home/user/Desktop/ficha02/labs/lab2/lab2
-/home/user/Desktop/ficha02/labs/lab2/debug.h
-/home/user/Desktop/ficha02/labs/lab2/main.c
+/home/user/Desktop/ficha02/labs/lab1/
+/home/user/Desktop/ficha02/labs/lab1/makefile
+/home/user/Desktop/ficha02/labs/lab1/sorter.c
+/home/user/Desktop/ficha02/labs/lab1/sorter.h
+/home/user/Desktop/ficha02/labs/lab1/main.c

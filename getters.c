@@ -22,7 +22,9 @@ char **list_files(char **args, int n_args)
     for (i = 0; i < n_args; ++i)
     {
         files_array[i] = (char *)MALLOC(sizeof(char) * ((int)strlen(args[i]) + 1));
+        DEBUG("Original: %d", (int)strlen(args[i]));
         strcpy(files_array[i], args[i]);
+        DEBUG("Cópia: %d", (int)strlen(files_array[i]));
     }
 
     return files_array;
@@ -63,8 +65,9 @@ char **read_batch(char *filename, int *total)
         {
             if ((nread = getline(&line, &len, f)) > 0)
             {
-                files_list[i] = (char *)MALLOC(sizeof(char) * ((int)nread + 1));
-                strcpy(files_list[i], line);
+                files_list[i] = (char *)MALLOC(sizeof(char) * ((int)nread));
+                strncpy(files_list[i], line, nread - 1);
+
                 (*total)++;
             }
         }
@@ -82,6 +85,7 @@ char **read_batch(char *filename, int *total)
 char *extract(char *filename)
 {
     char *chr = strrchr(filename, 46);
+    DEBUG("%s", chr);
     int i;
     char *str_ext = NULL;
 
@@ -91,15 +95,17 @@ char *extract(char *filename)
     }
     else
     {
-        int n_bytes = (int)strlen(chr) + 1;
+        int n_bytes = (int)strlen(chr);
         str_ext = MALLOC(n_bytes);
 
         for (i = 0; i < n_bytes; ++i)
         {
-            str_ext[i] += chr[i + 1];
+            str_ext[i] = chr[i + 1];
+            DEBUG("cópia: %c | original:%c | i: %d", str_ext[i], chr[i + 1], i);
         }
+        chr = NULL;
     }
-
+    DEBUG("string retorno: %s", str_ext);
     return str_ext;
 }
 
@@ -129,13 +135,17 @@ char *get_file_type(char *out_filename)
             break;
         }
 
-        str_type[i] += tolower(buffer);
+        str_type[i] = tolower(buffer);
+        DEBUG("cópia %c | lido %c", str_type[i], buffer);
     }
+    DEBUG("Após cópia: %s", str_type);
 
     if (close(fd) == -1)
     {
         ERROR(1, "Failed to close output file");
     }
+
+    DEBUG("str retorno: %s", str_type);
 
     return str_type;
 }
