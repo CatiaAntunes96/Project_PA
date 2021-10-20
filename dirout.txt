@@ -1,5 +1,4 @@
-/home/user/Desktop/ficha02/labs/lab1/
-/home/user/Desktop/ficha02/labs/lab1/makefile
-/home/user/Desktop/ficha02/labs/lab1/sorter.c
-/home/user/Desktop/ficha02/labs/lab1/sorter.h
-/home/user/Desktop/ficha02/labs/lab1/main.c
+/home/user/Transferências
+/home/user/Transferências/png.mp4
+/home/user/Transferências/PNG_transparency_demonstration_2.html
+/home/user/Transferências/img.zip

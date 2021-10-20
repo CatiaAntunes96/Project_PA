@@ -22,15 +22,13 @@ char **list_files(char **args, int n_args)
     for (i = 0; i < n_args; ++i)
     {
         files_array[i] = (char *)MALLOC(sizeof(char) * ((int)strlen(args[i]) + 1));
-        DEBUG("Original: %d", (int)strlen(args[i]));
         strcpy(files_array[i], args[i]);
-        DEBUG("Cópia: %d", (int)strlen(files_array[i]));
     }
 
     return files_array;
 }
 
-char **read_batch(char *filename, int *total)
+char **read_lines(char *filename, int *total, char option)
 {
     char **files_list = NULL;
     char ch;
@@ -60,14 +58,23 @@ char **read_batch(char *filename, int *total)
         char *line = NULL;
         size_t len = 0;
         ssize_t nread;
+        ssize_t j;
 
         for (i = 0; i < n_lines; ++i)
         {
             if ((nread = getline(&line, &len, f)) > 0)
             {
                 files_list[i] = (char *)MALLOC(sizeof(char) * ((int)nread));
-                strncpy(files_list[i], line, nread - 1);
-
+                for (j = 0; j < nread && line[j] != '\n'; ++j)
+                {
+                    {
+                        files_list[i][j] = line[j];
+                    }
+                }
+                for (; j < nread; ++j)
+                {
+                    files_list[i][j] = '\0';
+                }
                 (*total)++;
             }
         }
@@ -79,19 +86,35 @@ char **read_batch(char *filename, int *total)
             WARNING("Failed to close batch file");
         }
     }
-    return files_list;
+
+    if (option == 'b')
+    {
+        return files_list;
+    }
+    else
+    {
+        for (i = 0; i < n_lines; ++i)
+        {
+            if (i + 1 >= n_lines)
+            {
+                files_list[i] = NULL;
+            }
+            files_list[i] = files_list[i + 1];
+        }
+        (*total)--;
+        return files_list;
+    }
 }
 
 char *extract(char *filename)
 {
     char *chr = strrchr(filename, 46);
-    DEBUG("%s", chr);
     int i;
     char *str_ext = NULL;
 
     if (chr == NULL)
     {
-        WARNING("[WARNING] '%s' filename does not have an extension", filename);
+        WARNING("'%s' filename does not have an extension", filename);
     }
     else
     {
@@ -101,51 +124,74 @@ char *extract(char *filename)
         for (i = 0; i < n_bytes; ++i)
         {
             str_ext[i] = chr[i + 1];
-            DEBUG("cópia: %c | original:%c | i: %d", str_ext[i], chr[i + 1], i);
         }
         chr = NULL;
     }
-    DEBUG("string retorno: %s", str_ext);
     return str_ext;
 }
 
-char *get_file_type(char *out_filename)
+char *get_file_out(char *out_filename)
 {
     char *str_type = NULL;
-    char buffer;
-    int fd;
+    char *line = NULL;
+    size_t len = 0;
+    ssize_t nread;
+    ssize_t j;
 
-    fd = open(out_filename, O_RDONLY);
+    FILE *f = fopen(out_filename, "r");
 
-    if (fd == -1)
+    if (f == NULL)
     {
-        ERROR(1, "Failed to open output file");
+        WARNING("Could not open file '%s' for reading", out_filename);
     }
 
-    str_type = MALLOC(SIZE_EXT);
-
-    for (int i = 0; i < SIZE_EXT; ++i)
+    if ((nread = getline(&line, &len, f)) > 0)
     {
-        if (read(fd, &buffer, 1) == -1)
+        str_type = (char *)MALLOC(sizeof(char) * ((int)nread));
+        for (j = 0; j < nread && line[j] != '\n'; ++j)
         {
-            ERROR(1, "Failed to read from output file");
+            str_type[j] = line[j];
         }
-        if (buffer == 32)
+        for (; j < nread; ++j)
         {
-            break;
+            str_type[j] = '\0';
         }
-
-        str_type[i] = tolower(buffer);
-        DEBUG("cópia %c | lido %c", str_type[i], buffer);
     }
-    DEBUG("Após cópia: %s", str_type);
+    FREE(line);
 
-    if (close(fd) == -1)
+    if (fclose(f) == -1)
     {
-        ERROR(1, "Failed to close output file");
+        WARNING("Failed to close batch file");
     }
-
-    DEBUG("str retorno: %s", str_type);
 
     return str_type;
+}
+
+char *get_extension(char *str)
+{
+    char *chr = strchr(str, 32);
+
+    int i;
+    char *file_ext = NULL;
+
+    if (chr == NULL)
+    {
+        return NULL;
+    }
+    else
+    {
+        int n_bytes = ((int)strlen(str) - (int)strlen(chr));
+        file_ext = MALLOC(n_bytes + 1);
+
+        for (i = 0; i < n_bytes + 1; ++i)
+        {
+            file_ext[i] = tolower(str[i]);
+            if (str[i] == 32)
+            {
+                file_ext[i] = '\0';
+            }
+        }
+        chr = NULL;
+    }
+    return file_ext;
 }

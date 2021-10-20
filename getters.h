@@ -5,8 +5,9 @@
 #define SIZE_EXT 5
 
 char **list_files(char **args, int n_args);
-char **read_batch(char *filename, int *total);
+char **read_lines(char *filename, int *total, char option);
 char *extract(char *filename);
-char *get_file_type(char *out_filename);
+char *get_file_out(char *out_filename);
+char *get_extension(char *str);
 
 #endif
