@@ -83,12 +83,13 @@ char **read_lines(char *filename, int *total, char option)
 
         if (fclose(f) == -1)
         {
-            WARNING("Failed to close batch file");
+            WARNING("Failed to close file");
         }
     }
 
     if (option == 'b')
     {
+        DEBUG("total %d", *total);
         return files_list;
     }
     else
@@ -102,6 +103,7 @@ char **read_lines(char *filename, int *total, char option)
             files_list[i] = files_list[i + 1];
         }
         (*total)--;
+        DEBUG("total dir %d", *total);
         return files_list;
     }
 }

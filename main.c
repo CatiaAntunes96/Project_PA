@@ -100,10 +100,13 @@ int main(int argc, char *argv[])
         char *comm = "file";
         char *opt = "-bE";
 
+        DEBUG("Antes do call");
         exec_call(btype, batch_filename, comm, opt);
-
+        DEBUG("depois do call");
         char *batch_check_out = get_file_out(G_output_filename);
         char *batch_ext = get_extension(batch_check_out);
+        DEBUG("batch output %s", batch_check_out);
+        DEBUG("batch ext %s", batch_ext);
 
         cmp_ext_type(batch_ext, "ascii", batch_filename);
 
@@ -115,7 +118,6 @@ int main(int argc, char *argv[])
 
         files_list = read_lines(batch_filename, &n_files, this_option);
 
-        DEBUG("Valor por ref: %d", n_files);
         printf("[INFO] analyzing files listed in '%s'\n", batch_filename);
 
         for (i = 0; i < n_files; ++i)
@@ -127,17 +129,17 @@ int main(int argc, char *argv[])
                 continue;
             }
             char *extension = extract(filename);
-            DEBUG("extension recebida pela função: %s", extension);
             if (extension == NULL)
             {
                 continue;
             }
+            DEBUG("Antes do call");
 
             exec_call(G_output_filename, filename, comm, opt);
-
+            DEBUG("OUT filename %s, filename %s", G_output_filename, filename);
+            DEBUG("depois do call");
             char *file_check_out = get_file_out(G_output_filename);
             char *file_ext = get_extension(file_check_out);
-            DEBUG("FILE EXT %s", file_ext);
 
             if (!type_check(file_ext, filename))
             {
