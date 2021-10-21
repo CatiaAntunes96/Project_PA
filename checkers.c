@@ -57,7 +57,7 @@ int dir_check(char *dirname, int *n_errors)
     return 1;
 }
 
-int type_check(char *str_type, char *filename)
+int type_check(char *str_type, char *filename, char *filetype)
 {
     int comp;
     int j = 0;
@@ -70,7 +70,7 @@ int type_check(char *str_type, char *filename)
 
     if (comp != 0)
     {
-        printf("[INFO] '%s': type '%s' is not supported by checkFile\n", filename, str_type);
+        printf("[INFO] '%s': type '%s' is not supported by checkFile\n", filename, filetype);
         return 0;
     }
     return 1;
@@ -78,7 +78,10 @@ int type_check(char *str_type, char *filename)
 
 void cmp_ext_type(char *ext, char *type, char *filename, int *n_mism, int *n_ok)
 {
-    if (strcmp(ext, type) != 0)
+    if (strcmp("ascii", ext) == 0)
+    {
+    }
+    else if (strcmp(ext, type) != 0)
     {
         printf("[MISMATCH] '%s': extension is '%s', file type is '%s'\n", filename, ext, type);
         (*n_mism)++;

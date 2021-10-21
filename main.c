@@ -78,7 +78,7 @@ int main(int argc, char *argv[])
             char *file_ext = get_extension(file_check_out);
 
             // checks if the file type is supported by the app, runs the string against an array of predefined extensions
-            if (!type_check(file_ext, filename))
+            if (!type_check(file_ext, filename, file_check_out))
             {
                 continue;
             }
@@ -138,7 +138,7 @@ int main(int argc, char *argv[])
             char *file_check_out = get_file_out(G_output_filename);
             char *file_ext = get_extension(file_check_out);
 
-            if (!type_check(file_ext, filename))
+            if (!type_check(file_ext, filename, file_check_out))
             {
                 continue;
             }
@@ -198,7 +198,7 @@ int main(int argc, char *argv[])
             char *file_check_out = get_file_out(G_output_filename);
             char *file_ext = get_extension(file_check_out);
 
-            if (!type_check(file_ext, filename))
+            if (!type_check(file_ext, filename, file_check_out))
             {
                 continue;
             }

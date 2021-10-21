@@ -3,7 +3,7 @@
 
 int file_check(char *filename, int *n_errors);
 int dir_check(char *dirname, int *n_errors);
-int type_check(char *str_type, char *filename);
+int type_check(char *str_type, char *filename, char *filetype);
 void cmp_ext_type(char *ext, char *type, char *filename, int *n_mism, int *n_ok);
 
 #endif
