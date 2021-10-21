@@ -89,7 +89,6 @@ char **read_lines(char *filename, int *total, char option)
 
     if (option == 'b')
     {
-        DEBUG("total %d", *total);
         return files_list;
     }
     else
@@ -103,7 +102,6 @@ char **read_lines(char *filename, int *total, char option)
             files_list[i] = files_list[i + 1];
         }
         (*total)--;
-        DEBUG("total dir %d", *total);
         return files_list;
     }
 }

@@ -18,7 +18,7 @@
 // array of extensions supported by the app
 char *G_extensions[NUM_EXT] = {"pdf", "gif", "jpg", "png", "mp4", "zip", "html"};
 
-int file_check(char *filename)
+int file_check(char *filename, int *n_errors)
 {
     FILE *fptr = NULL;
     fptr = fopen(filename, "r");
@@ -26,6 +26,7 @@ int file_check(char *filename)
     if (fptr == NULL)
     {
         fprintf(stderr, "[ERROR] cannot open file '%s' -- %s\n", filename, strerror(errno));
+        (*n_errors)++;
         return 0;
     }
 
@@ -37,7 +38,7 @@ int file_check(char *filename)
     return 1;
 }
 
-int dir_check(char *dirname)
+int dir_check(char *dirname, int *n_errors)
 {
     DIR *dptr = NULL;
     dptr = opendir(dirname);
@@ -45,6 +46,7 @@ int dir_check(char *dirname)
     if (dptr == NULL)
     {
         fprintf(stderr, "[ERROR] cannot open dir '%s' -- %s\n", dirname, strerror(errno));
+        (*n_errors)++;
         return 0;
     }
 
@@ -74,14 +76,16 @@ int type_check(char *str_type, char *filename)
     return 1;
 }
 
-void cmp_ext_type(char *ext, char *type, char *filename)
+void cmp_ext_type(char *ext, char *type, char *filename, int *n_mism, int *n_ok)
 {
     if (strcmp(ext, type) != 0)
     {
         printf("[MISMATCH] '%s': extension is '%s', file type is '%s'\n", filename, ext, type);
+        (*n_mism)++;
     }
     else
     {
         printf("[OK] '%s': extension '%s' matches file type '%s'\n", filename, ext, type);
+        (*n_ok)++;
     }
 }

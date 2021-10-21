@@ -24,7 +24,7 @@
 #include "sys.h"
 
 // filename for stdout redirect
-char *G_output_filename = "./out.txt";
+char *G_output_filename = "out.txt";
 
 int main(int argc, char *argv[])
 {
@@ -40,7 +40,7 @@ int main(int argc, char *argv[])
 
         // Number of files passed by prompt
         int n_files = args_info.file_given;
-        int i;
+        int i, mismatch = 0, ok = 0, errors = 0;
 
         char **files_list = NULL;
         files_list = list_files(args_info.file_arg, n_files);
@@ -58,7 +58,7 @@ int main(int argc, char *argv[])
             // indiviual filename from filenames array
             filename = files_list[i];
 
-            if (!file_check(filename))
+            if (!file_check(filename, &errors))
             {
                 continue;
             }
@@ -84,7 +84,7 @@ int main(int argc, char *argv[])
             }
 
             // basic comparison between the extension on the filename passed by the user and the file type obtained from the file command
-            cmp_ext_type(extension, file_ext, filename);
+            cmp_ext_type(extension, file_ext, filename, &mismatch, &ok);
 
             FREE(filename);
         }
@@ -93,27 +93,26 @@ int main(int argc, char *argv[])
     }
     else if (args_info.batch_given > 0)
     {
-        char *batch_filename = args_info.batch_arg;
-        file_check(batch_filename);
+        int mismatch = 0, ok = 0, errors = 0;
 
-        char *btype = "./btype.txt";
+        char *batch_filename = args_info.batch_arg;
+        file_check(batch_filename, &errors);
+        char this_option = 'b';
+
+        char *batch_type_out = "bchout.txt";
         char *comm = "file";
         char *opt = "-bE";
 
-        DEBUG("Antes do call");
-        exec_call(btype, batch_filename, comm, opt);
-        DEBUG("depois do call");
-        char *batch_check_out = get_file_out(G_output_filename);
-        char *batch_ext = get_extension(batch_check_out);
-        DEBUG("batch output %s", batch_check_out);
-        DEBUG("batch ext %s", batch_ext);
+        exec_call(batch_type_out, batch_filename, comm, opt);
 
-        cmp_ext_type(batch_ext, "ascii", batch_filename);
+        char *batch_check_out = get_file_out(batch_type_out);
+        char *batch_ext = get_extension(batch_check_out);
+
+        cmp_ext_type(batch_ext, "ascii", batch_filename, &mismatch, &ok);
 
         char **files_list = NULL;
         char *filename = NULL;
         int n_files = 0;
-        char this_option = 'b';
         int i;
 
         files_list = read_lines(batch_filename, &n_files, this_option);
@@ -124,7 +123,7 @@ int main(int argc, char *argv[])
         {
             filename = files_list[i];
 
-            if (!file_check(filename))
+            if (!file_check(filename, &errors))
             {
                 continue;
             }
@@ -133,11 +132,9 @@ int main(int argc, char *argv[])
             {
                 continue;
             }
-            DEBUG("Antes do call");
 
             exec_call(G_output_filename, filename, comm, opt);
-            DEBUG("OUT filename %s, filename %s", G_output_filename, filename);
-            DEBUG("depois do call");
+
             char *file_check_out = get_file_out(G_output_filename);
             char *file_ext = get_extension(file_check_out);
 
@@ -146,53 +143,48 @@ int main(int argc, char *argv[])
                 continue;
             }
 
-            cmp_ext_type(extension, file_ext, filename);
+            cmp_ext_type(extension, file_ext, filename, &mismatch, &ok);
 
             FREE(filename);
         }
 
         FREE(files_list);
-        printf("[SUMMARY] files analyzed:%d; files OK: ; files MISMATCH: ; errors: \n", n_files);
+        printf("[SUMMARY] files analyzed: %d; files OK: %d; files MISMATCH: %d; errors: %d\n", n_files, ok, mismatch, errors);
     }
     else
     {
         char *dirname = args_info.directory_arg;
 
-        char this_option = 'd';
-
-        char *dir_out = "./dirout.txt";
+        int mismatch = 0, ok = 0, errors = 0;
+        char *dir_out = "dirout.txt";
         char *comm = "find";
-        char *opt = "";
 
-        if (!dir_check(dirname))
+        if (!dir_check(dirname, &errors))
         {
             exit(1);
         }
         printf("[INFO] analyzing files of directory '%s'\n", dirname);
-        DEBUG("antes do call");
 
-        exec_call(dir_out, dirname, comm, opt);
-
-        DEBUG("depois do call");
+        exec_call_dir(dir_out, dirname, comm);
 
         char **files_list = NULL;
         int n_files = 0;
         int i;
+        char this_option = 'd';
 
         files_list = read_lines(dir_out, &n_files, this_option);
         char *filename = NULL;
 
         comm = "file";
-        opt = "-bE";
+        char *opt = "-bE";
 
         for (i = 0; i < n_files; ++i)
         {
             filename = files_list[i];
-            DEBUG("file list %s", files_list[i]);
+            ;
 
-            if (!file_check(filename))
+            if (!file_check(filename, &errors))
             {
-                DEBUG("%d", file_check(filename));
                 continue;
             }
             char *extension = extract(filename);
@@ -211,12 +203,12 @@ int main(int argc, char *argv[])
                 continue;
             }
 
-            cmp_ext_type(extension, file_ext, filename);
+            cmp_ext_type(extension, file_ext, filename, &mismatch, &ok);
 
             FREE(filename);
         }
         FREE(files_list);
-        printf("[SUMMARY] files analyzed:%d; files OK: ; files MISMATCH: ; errors: \n", n_files);
+        printf("[SUMMARY] files analyzed:%d; files OK: %d; files MISMATCH: %d; errors: %d\n", n_files, ok, mismatch, errors);
     }
 
     cmdline_parser_free(&args_info);
