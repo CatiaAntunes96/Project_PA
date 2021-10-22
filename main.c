@@ -151,7 +151,7 @@ int main(int argc, char *argv[])
         FREE(files_list);
         printf("[SUMMARY] files analyzed: %d; files OK: %d; files MISMATCH: %d; errors: %d\n", n_files, ok, mismatch, errors);
     }
-    else
+    else if (args_info.directory_given > 0)
     {
         char *dirname = args_info.directory_arg;
 
@@ -209,6 +209,13 @@ int main(int argc, char *argv[])
         }
         FREE(files_list);
         printf("[SUMMARY] files analyzed:%d; files OK: %d; files MISMATCH: %d; errors: %d\n", n_files, ok, mismatch, errors);
+    }
+    else
+    {
+        char *student1 = "2200723";
+        char *student2 = "2212492";
+        printf("%s, %s\nfile types supported by checkFile:\n", student1, student2);
+        show_extensions();
     }
 
     cmdline_parser_free(&args_info);

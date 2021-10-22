@@ -92,3 +92,12 @@ void cmp_ext_type(char *ext, char *type, char *filename, int *n_mism, int *n_ok)
         (*n_ok)++;
     }
 }
+
+void show_extensions()
+{
+    for (int i = 0; i < NUM_EXT - 2; i++)
+    {
+        printf("%s, ", G_extensions[i]);
+    }
+    printf("%s\n", G_extensions[NUM_EXT - 1]);
+}
