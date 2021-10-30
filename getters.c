@@ -12,6 +12,7 @@
 #include "debug.h"
 #include "memory.h"
 
+// Copy from argument array to new array of filenames
 char **list_files(char **args, int n_args)
 {
     int i;
@@ -28,6 +29,8 @@ char **list_files(char **args, int n_args)
     return files_array;
 }
 
+// Reads from a given file and copies the content into a string array
+// In case of the output file of a directory content skips the first line
 char **read_lines(char *filename, int *total, char option)
 {
     char **files_list = NULL;
@@ -106,7 +109,8 @@ char **read_lines(char *filename, int *total, char option)
     }
 }
 
-char *extract(char *filename)
+// Looks for a '.' in a filename and returns a pointer to the first character after the symbol
+char *get_ext_from_filename(char *filename)
 {
     char *chr = strrchr(filename, 46);
     int i;
@@ -130,7 +134,9 @@ char *extract(char *filename)
     return str_ext;
 }
 
-char *get_file_out(char *out_filename)
+// Used for options batch and directory
+// Replaces '\n' for '\0' to get the extensions individually
+char *get_str_from_out_file(char *out_filename)
 {
     char *str_type = NULL;
     char *line = NULL;
@@ -161,13 +167,14 @@ char *get_file_out(char *out_filename)
 
     if (fclose(f) == -1)
     {
-        WARNING("Failed to close batch file");
+        WARNING("Failed to close '%s'", out_filename);
     }
 
     return str_type;
 }
 
-char *get_extension(char *str)
+// Looks for <space> in the output text file from the exec file command
+char *get_ext_from_out_str(char *str)
 {
     char *chr = strchr(str, 32);
 

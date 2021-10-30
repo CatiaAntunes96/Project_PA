@@ -13,7 +13,7 @@
 #include "memory.h"
 
 // number of extensions supported by the app
-#define NUM_EXT 7
+#define NUM_EXT 8
 
 // array of extensions supported by the app
 char *G_extensions[NUM_EXT] = {"pdf", "gif", "jpg", "png", "mp4", "zip", "html"};
@@ -57,7 +57,7 @@ int dir_check(char *dirname, int *n_errors)
     return 1;
 }
 
-int type_check(char *str_type, char *filename, char *filetype)
+int type_check(char *str_type, char *filename, char *filetype, int *n_not_supported)
 {
     int comp;
     int j = 0;
@@ -71,6 +71,7 @@ int type_check(char *str_type, char *filename, char *filetype)
     if (comp != 0)
     {
         printf("[INFO] '%s': type '%s' is not supported by checkFile\n", filename, filetype);
+        (*n_not_supported)++;
         return 0;
     }
     return 1;
