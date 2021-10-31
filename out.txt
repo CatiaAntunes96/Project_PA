@@ -1,1 +1,1 @@
-ASCII text
+makefile script, ASCII text

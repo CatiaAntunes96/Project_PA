@@ -15,7 +15,9 @@
 // number of extensions supported by the app
 #define NUM_EXT 11
 #define C_ERR_OPEN_FILE 1
-#define C_ERR_OPEN_DIR 2
+#define C_ERR_EMPTY_FILE 2
+#define C_ERR_OPEN_DIR 3
+#define C_ERR_EMPTY_DIR 4
 
 // array of extensions supported by the app
 char *G_extensions[NUM_EXT] = {"pdf", "gif", "jpg", "jpeg", "png", "mp4", "zip", "7z", "gz", "tgz", "html"};
@@ -36,6 +38,13 @@ int file_check(char *filename, char option, int *n_errors)
         return 0;
     }
 
+    fseek(fptr, 0, SEEK_END);
+    if (ftell(fptr) == 0)
+    {
+        printf("[ERROR] '%s' file is empty\n", filename);
+        exit(C_ERR_EMPTY_FILE);
+    }
+
     if (fclose(fptr) == -1)
     {
         WARNING("Closing file fault");
@@ -54,6 +63,20 @@ void dir_check(char *dirname)
     {
         fprintf(stderr, "[ERROR] cannot open dir '%s' -- %s\n", dirname, strerror(errno));
         exit(C_ERR_OPEN_DIR);
+    }
+
+    int i = 0;
+
+    do
+    {
+        readdir(dptr);
+        ++i;
+    } while (i < 2);
+
+    if (readdir(dptr) == NULL)
+    {
+        printf("[ERROR] '%s' directory is empty\n", dirname);
+        exit(C_ERR_EMPTY_FILE);
     }
 
     if (closedir(dptr) == -1)
@@ -82,23 +105,21 @@ int type_check(char *str_type, char *filename, char *filetype, int *n_not_suppor
     return 1;
 }
 
-int cmp_ext_type(char *ext, char *type, char *filename, int *n_mism, int *n_ok)
+void cmp_ext_type(char *ext, char *type, char *filename, int *n_mism, int *n_ok)
 {
-    // this condition's purpose is to acess if the batch file recieved from the prompt
-    // is a text file
-    if (strcmp("ascii", type) == 0)
-    {
-        return 1;
-    }
+    // // this condition's purpose is to acess if the batch file recieved from the prompt
+    // // is a text file
+    // if (strcmp("ascii", type) == 0)
+    // {
+    //     return 1;
+    // }
     if (strcmp(ext, type) != 0)
     {
         printf("[MISMATCH] '%s': extension is '%s', file type is '%s'\n", filename, ext, type);
         (*n_mism)++;
-        return 0;
     }
     printf("[OK] '%s': extension '%s' matches file type '%s'\n", filename, ext, type);
     (*n_ok)++;
-    return 1;
 }
 
 void show_extensions()

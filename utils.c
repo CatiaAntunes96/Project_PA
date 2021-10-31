@@ -44,76 +44,39 @@ void f_option(char **args, int n_args)
     process_file(files_list, n_files, this_option);
 }
 
-// void b_option(char *arg)
-// {
-//     char this_option = 'b';
+void b_option(char *arg)
+{
+    // this debug is placed here for SIGUSR1 testing purposes only
+    DEBUG("PID: %d", getpid());
 
-//     char *batch_filename = arg;
+    char this_option = 'b';
 
-//     if (!file_check(batch_filename, this_option, &errors))
-//     {
-//         exit(C_ERR_OPEN_BATCH);
-//     }
+    char *batch_filename = arg;
 
-//     char *batch_ext = get_ext_from_filename(batch_filename);
+    if ((fopen(batch_filename, "r") == NULL))
+    {
+        fprintf(stderr, "[ERROR] cannot open file '%s' -- %s\n", batch_filename, strerror(errno));
+        exit(C_ERR_OPEN_BATCH);
+    }
 
-//     exec_call(G_output_filename, batch_filename);
+    exec_call(G_output_filename, batch_filename);
 
-//     char *out_file_info = get_str_from_out_file(G_output_filename);
-//     char *out_file_ext = get_ext_from_out_str(out_file_info);
+    char *out_file_info = get_str_from_out_file(G_output_filename);
+    char *out_file_ext = get_ext_from_out_str(out_file_info);
 
-//     if (!cmp_ext_type(batch_ext, out_file_ext, batch_filename, &mismatch, &ok))
-//     {
-//         ERROR(C_ERR_BATCH_TYPE, "Invalid batch file type: batch must be text file");
-//     }
+    if (strcmp(out_file_ext, "ascii") != 0)
+    {
+        printf("[ERROR] invalid batch file type -- batch must be text file\n");
+        exit(C_ERR_BATCH_TYPE);
+    }
 
-//     printf("[INFO] analyzing files listed in '%s'\n", batch_filename);
+    printf("[INFO] analyzing files listed in '%s'\n", batch_filename);
 
-//     char **files_list = NULL;
-//     char *filename = NULL;
+    int n_files = 0;
+    char **files_list = read_lines(batch_filename, &n_files);
 
-//     files_list = read_lines(batch_filename, &n_files, this_option);
-
-//     for (i = 0; i < n_files; ++i)
-//     {
-//         // this debug is placed here for SIGUSR1 testing purposes only
-//         DEBUG("PID: %d", getpid());
-
-//         filename = files_list[i];
-//         G_filename = filename;
-//         G_filenumber = i + 1;
-
-//         if (!file_check(filename, this_option, &errors))
-//         {
-//             continue;
-//         }
-
-//         char *extension = get_ext_from_filename(filename);
-
-//         if (extension == NULL)
-//         {
-//             continue;
-//         }
-
-//         exec_call(G_output_filename, filename, comm, opt);
-
-//         char *out_file_info = get_str_from_out_file(G_output_filename);
-//         char *out_file_ext = get_ext_from_out_str(out_file_info);
-
-//         if (!type_check(out_file_ext, filename, out_file_info, &not_sup))
-//         {
-//             continue;
-//         }
-
-//         cmp_ext_type(extension, out_file_ext, filename, &mismatch, &ok);
-
-//         FREE(filename);
-//     }
-
-//     FREE(files_list);
-
-//     printf("[SUMMARY] files analyzed: %d; files OK: %d; files MISMATCH: %d; files NOT SUPPORTED: %d; errors: %d\n", n_files, ok, mismatch, not_sup, errors);
-// }
+    process_file(files_list, n_files, this_option);
+}
 
 void d_option(char *arg)
 {
@@ -146,6 +109,12 @@ void process_file(char **files_list, int n_files, char option)
     for (i = 0; i < n_files; ++i)
     {
         filename = files_list[i];
+
+        if (option == 'b')
+        {
+            G_filename = filename;
+            G_filenumber = i + 1;
+        }
 
         // atempts to open file and assess if it is ok to proceed
         if (!file_check(filename, option, &errors))
@@ -186,6 +155,7 @@ void process_file(char **files_list, int n_files, char option)
 
         FREE(filename);
     }
+
     if (option == 'b' || option == 'd')
     {
         printf("[SUMMARY] files analyzed:%d; files OK: %d; files MISMATCH: %d; files NOT SUPPORTED: %d; errors: %d\n", n_files, ok, mismatch, not_sup, errors);
