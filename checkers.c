@@ -13,12 +13,12 @@
 #include "memory.h"
 
 // number of extensions supported by the app
-#define NUM_EXT 7
+#define NUM_EXT 11
 #define C_ERR_OPEN_FILE 1
 #define C_ERR_OPEN_DIR 2
 
 // array of extensions supported by the app
-char *G_extensions[NUM_EXT] = {"pdf", "gif", "jpg", "png", "mp4", "zip", "html"};
+char *G_extensions[NUM_EXT] = {"pdf", "gif", "jpg", "jpeg", "png", "mp4", "zip", "7z", "gz", "tgz", "html"};
 
 int file_check(char *filename, char option, int *n_errors)
 {
@@ -47,6 +47,7 @@ int file_check(char *filename, char option, int *n_errors)
 void dir_check(char *dirname)
 {
     DIR *dptr = NULL;
+
     dptr = opendir(dirname);
 
     if (dptr == NULL)
@@ -83,6 +84,8 @@ int type_check(char *str_type, char *filename, char *filetype, int *n_not_suppor
 
 int cmp_ext_type(char *ext, char *type, char *filename, int *n_mism, int *n_ok)
 {
+    // this condition's purpose is to acess if the batch file recieved from the prompt
+    // is a text file
     if (strcmp("ascii", type) == 0)
     {
         return 1;

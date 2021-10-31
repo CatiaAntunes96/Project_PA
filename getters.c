@@ -12,7 +12,7 @@
 #include "debug.h"
 #include "memory.h"
 
-// Copy from argument array to new array of filenames
+// Copies the filenames from argument array into a new string array
 char **list_files(char **args, int n_args)
 {
     int i;
@@ -29,15 +29,16 @@ char **list_files(char **args, int n_args)
     return files_array;
 }
 
-// Reads from a given file and copies the content into a string array
-// In case of the output file of a directory content skips the first line
-char **read_lines(char *filename, int *total, char option)
+// Used for options -b and -d
+// Reads from a given file and copies the content into a string
+// array returns the number of files read by reference
+char **read_lines(char *filename, int *total)
 {
     char **files_list = NULL;
     char ch;
     int n_lines = 0;
     int i;
-    *total = 0;
+    *total = 0; // number of filenames read
 
     FILE *f = fopen(filename, "r");
 
@@ -68,6 +69,11 @@ char **read_lines(char *filename, int *total, char option)
             if ((nread = getline(&line, &len, f)) > 0)
             {
                 files_list[i] = (char *)MALLOC(sizeof(char) * ((int)nread));
+
+                // this portion of code is copied from man page STRCPY(3)
+                // due to strncpy not working properly for the intended
+                // purpose, in this case is to replace the line break with
+                // the string terminator
                 for (j = 0; j < nread && line[j] != '\n'; ++j)
                 {
                     {
@@ -90,26 +96,11 @@ char **read_lines(char *filename, int *total, char option)
         }
     }
 
-    if (option == 'b')
-    {
-        return files_list;
-    }
-    else
-    {
-        for (i = 0; i < n_lines; ++i)
-        {
-            if (i + 1 >= n_lines)
-            {
-                files_list[i] = NULL;
-            }
-            files_list[i] = files_list[i + 1];
-        }
-        (*total)--;
-        return files_list;
-    }
+    return files_list;
 }
 
-// Looks for a '.' in a filename and returns a pointer to the first character after the symbol
+// Looks for a '.' char in a filename and returns a string containing
+// the characters after the desginated symbol
 char *get_ext_from_filename(char *filename)
 {
     char *chr = strrchr(filename, 46);
@@ -134,8 +125,8 @@ char *get_ext_from_filename(char *filename)
     return str_ext;
 }
 
-// Used for options batch and directory
-// Replaces '\n' for '\0' to get the extensions individually
+// Reads from the file to which the exec's stdout is redirected, copies
+// the line read into a string and returns it
 char *get_str_from_out_file(char *out_filename)
 {
     char *str_type = NULL;
@@ -173,7 +164,8 @@ char *get_str_from_out_file(char *out_filename)
     return str_type;
 }
 
-// Looks for <space> in the output text file from the exec file command
+// Looks for <space> in the string passed by parameter and returns
+// a string containing the characteres found before that delimiter
 char *get_ext_from_out_str(char *str)
 {
     char *chr = strchr(str, 32);

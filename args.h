@@ -44,12 +44,12 @@ struct gengetopt_args_info
   unsigned int file_min; /**< @brief file name's minimum occurreces */
   unsigned int file_max; /**< @brief file name's maximum occurreces */
   const char *file_help; /**< @brief file name help description.  */
-  char * batch_arg;	/**< @brief file containing file names or paths.  */
-  char * batch_orig;	/**< @brief file containing file names or paths original value given at command line.  */
-  const char *batch_help; /**< @brief file containing file names or paths help description.  */
-  char * directory_arg;	/**< @brief directory containing files to be checked.  */
-  char * directory_orig;	/**< @brief directory containing files to be checked original value given at command line.  */
-  const char *directory_help; /**< @brief directory containing files to be checked help description.  */
+  char * batch_arg;	/**< @brief file containing file names or paths per line.  */
+  char * batch_orig;	/**< @brief file containing file names or paths per line original value given at command line.  */
+  const char *batch_help; /**< @brief file containing file names or paths per line help description.  */
+  char * directory_arg;	/**< @brief non empty directory, files only.  */
+  char * directory_orig;	/**< @brief non empty directory, files only original value given at command line.  */
+  const char *directory_help; /**< @brief non empty directory, files only help description.  */
   
   unsigned int help_given ;	/**< @brief Whether help was given.  */
   unsigned int version_given ;	/**< @brief Whether version was given.  */

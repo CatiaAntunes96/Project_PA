@@ -64,7 +64,7 @@ int main(int argc, char *argv[])
         struct tm *time_data = localtime(&start_time);
         strftime(G_time, sizeof(G_time), "%Y.%m.%d_%Hh%M:%S", time_data);
 
-        b_option(args_info.batch_arg);
+        // b_option(args_info.batch_arg);
     }
     else if (args_info.directory_given > 0)
     {

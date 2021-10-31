@@ -13,7 +13,9 @@
 #include "debug.h"
 #include "memory.h"
 
-void exec_call(char *out_filename, char *filename, char *command, char *options)
+// Performs an exec system call to file over a given file and
+// writes the stdout to a file
+void exec_call(char *out_filename, char *filename)
 {
 
     pid_t pid = fork();
@@ -33,7 +35,7 @@ void exec_call(char *out_filename, char *filename, char *command, char *options)
             WARNING("Redirecting fault");
         }
 
-        execlp(command, command, options, filename, NULL);
+        execlp("file", "file", "-bE", filename, NULL);
 
         break;
 
@@ -42,7 +44,9 @@ void exec_call(char *out_filename, char *filename, char *command, char *options)
     }
 }
 
-void exec_call_dir(char *out_filename, char *filename, char *command)
+// Performs an exec system call to find the files in a given directory
+// and writes the stdout to a file
+void exec_call_dir(char *out_filename, char *dirname)
 {
 
     pid_t pid = fork();
@@ -63,7 +67,7 @@ void exec_call_dir(char *out_filename, char *filename, char *command)
             WARNING("Redirecting fault");
         }
 
-        execlp(command, command, filename, NULL);
+        execlp("find", "find", dirname, "-maxdepth", "1", "-type", "f", NULL);
 
         break;
 
@@ -72,6 +76,7 @@ void exec_call_dir(char *out_filename, char *filename, char *command)
     }
 }
 
+// Same function as the one presented on class' signals sheet example 2
 void signal_handler(int signal, siginfo_t *siginfo, void *context)
 {
     (void)context;
@@ -87,7 +92,8 @@ void signal_handler(int signal, siginfo_t *siginfo, void *context)
 
     if (signal == SIGUSR1)
     {
-        printf("Batch process started at %s\nProcessing file no. %d '%s'\n", G_time, G_filenumber, G_filename);
+        printf("Batch process started at %s\nProcessing file no. %d '%s'\n", G_time, G_filenumber,
+               G_filename);
     }
 
     errno = aux;
