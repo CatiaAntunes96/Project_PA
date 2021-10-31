@@ -13,12 +13,14 @@
 #include "memory.h"
 
 // number of extensions supported by the app
-#define NUM_EXT 8
+#define NUM_EXT 7
+#define C_ERR_OPEN_FILE 1
+#define C_ERR_OPEN_DIR 2
 
 // array of extensions supported by the app
 char *G_extensions[NUM_EXT] = {"pdf", "gif", "jpg", "png", "mp4", "zip", "html"};
 
-int file_check(char *filename, int *n_errors)
+int file_check(char *filename, char option, int *n_errors)
 {
     FILE *fptr = NULL;
     fptr = fopen(filename, "r");
@@ -26,6 +28,10 @@ int file_check(char *filename, int *n_errors)
     if (fptr == NULL)
     {
         fprintf(stderr, "[ERROR] cannot open file '%s' -- %s\n", filename, strerror(errno));
+        if (option == 'f')
+        {
+            exit(C_ERR_OPEN_FILE);
+        }
         (*n_errors)++;
         return 0;
     }
@@ -38,7 +44,7 @@ int file_check(char *filename, int *n_errors)
     return 1;
 }
 
-int dir_check(char *dirname, int *n_errors)
+void dir_check(char *dirname)
 {
     DIR *dptr = NULL;
     dptr = opendir(dirname);
@@ -46,15 +52,13 @@ int dir_check(char *dirname, int *n_errors)
     if (dptr == NULL)
     {
         fprintf(stderr, "[ERROR] cannot open dir '%s' -- %s\n", dirname, strerror(errno));
-        (*n_errors)++;
-        return 0;
+        exit(C_ERR_OPEN_DIR);
     }
 
     if (closedir(dptr) == -1)
     {
         WARNING("Closing dir fault");
-    };
-    return 1;
+    }
 }
 
 int type_check(char *str_type, char *filename, char *filetype, int *n_not_supported)
@@ -77,21 +81,21 @@ int type_check(char *str_type, char *filename, char *filetype, int *n_not_suppor
     return 1;
 }
 
-void cmp_ext_type(char *ext, char *type, char *filename, int *n_mism, int *n_ok)
+int cmp_ext_type(char *ext, char *type, char *filename, int *n_mism, int *n_ok)
 {
-    if (strcmp("ascii", ext) == 0)
+    if (strcmp("ascii", type) == 0)
     {
+        return 1;
     }
-    else if (strcmp(ext, type) != 0)
+    if (strcmp(ext, type) != 0)
     {
         printf("[MISMATCH] '%s': extension is '%s', file type is '%s'\n", filename, ext, type);
         (*n_mism)++;
+        return 0;
     }
-    else
-    {
-        printf("[OK] '%s': extension '%s' matches file type '%s'\n", filename, ext, type);
-        (*n_ok)++;
-    }
+    printf("[OK] '%s': extension '%s' matches file type '%s'\n", filename, ext, type);
+    (*n_ok)++;
+    return 1;
 }
 
 void show_extensions()

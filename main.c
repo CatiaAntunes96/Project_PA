@@ -26,6 +26,10 @@
 #include "checkers.h"
 #include "getters.h"
 
+#define C_ERR_SIGQUIT 1
+#define C_ERR_CMDL_PARSER 2
+#define C_ERR_SIGUSR1 3
+
 int main(int argc, char *argv[])
 {
     struct sigaction act;
@@ -35,14 +39,14 @@ int main(int argc, char *argv[])
 
     if (sigaction(SIGQUIT, &act, NULL) < 0)
     {
-        ERROR(1, "sigaction - SIGQUIT");
+        ERROR(C_ERR_SIGQUIT, "sigaction - SIGQUIT");
     }
 
     struct gengetopt_args_info args_info;
 
     if (cmdline_parser(argc, argv, &args_info) != 0)
     {
-        exit(1);
+        exit(C_ERR_CMDL_PARSER);
     }
 
     if (args_info.file_given > 0)
@@ -53,7 +57,7 @@ int main(int argc, char *argv[])
     {
         if (sigaction(SIGUSR1, &act, NULL) < 0)
         {
-            ERROR(1, "sigaction - SIGUSR1");
+            ERROR(C_ERR_SIGUSR1, "sigaction - SIGUSR1");
         }
 
         time_t start_time = time(NULL);
@@ -70,7 +74,7 @@ int main(int argc, char *argv[])
     {
         char *student1 = "Ines Machado - 2200723";
         char *student2 = "Catia Antunes - 2212492";
-        printf("%s\n%s\nFile types supported by checkFile:\n", student1, student2);
+        printf("Authors:\n%s\n%s\nFile types supported by checkFile:\n", student1, student2);
         show_extensions();
     }
 
