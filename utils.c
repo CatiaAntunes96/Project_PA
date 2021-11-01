@@ -53,10 +53,17 @@ void b_option(char *arg)
 
     char *batch_filename = arg;
 
-    if ((fopen(batch_filename, "r") == NULL))
+    FILE *f = NULL;
+
+    if ((f = fopen(batch_filename, "r")) == NULL)
     {
         fprintf(stderr, "[ERROR] cannot open file '%s' -- %s\n", batch_filename, strerror(errno));
         exit(C_ERR_OPEN_BATCH);
+    }
+
+    if (fclose(f) == -1)
+    {
+        WARNING("Closing file fault");
     }
 
     exec_call(G_output_filename, batch_filename);
@@ -64,7 +71,7 @@ void b_option(char *arg)
     char *out_file_info = get_str_from_out_file(G_output_filename);
     char *out_file_ext = get_ext_from_out_str(out_file_info);
 
-    if (strcmp(out_file_ext, "ascii") != 0)
+    if (strcmp(out_file_ext, "ascii") != 0 && strcmp(out_file_ext, "utf-8") != 0)
     {
         printf("[ERROR] invalid batch file type -- batch must be text file\n");
         exit(C_ERR_BATCH_TYPE);

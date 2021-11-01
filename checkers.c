@@ -13,14 +13,14 @@
 #include "memory.h"
 
 // number of extensions supported by the app
-#define NUM_EXT 11
+#define NUM_EXT 7
 #define C_ERR_OPEN_FILE 1
 #define C_ERR_EMPTY_FILE 2
 #define C_ERR_OPEN_DIR 3
 #define C_ERR_EMPTY_DIR 4
 
 // array of extensions supported by the app
-char *G_extensions[NUM_EXT] = {"pdf", "gif", "jpg", "jpeg", "png", "mp4", "zip", "7z", "gz", "tgz", "html"};
+char *G_extensions[NUM_EXT] = {"pdf", "gif", "jpg", "png", "mp4", "zip", "html"};
 
 int file_check(char *filename, char option, int *n_errors)
 {
@@ -107,19 +107,16 @@ int type_check(char *str_type, char *filename, char *filetype, int *n_not_suppor
 
 void cmp_ext_type(char *ext, char *type, char *filename, int *n_mism, int *n_ok)
 {
-    // // this condition's purpose is to acess if the batch file recieved from the prompt
-    // // is a text file
-    // if (strcmp("ascii", type) == 0)
-    // {
-    //     return 1;
-    // }
-    if (strcmp(ext, type) != 0)
+    if (strcmp(ext, type) == 0)
+    {
+        printf("[OK] '%s': extension '%s' matches file type '%s'\n", filename, ext, type);
+        (*n_ok)++;
+    }
+    else
     {
         printf("[MISMATCH] '%s': extension is '%s', file type is '%s'\n", filename, ext, type);
         (*n_mism)++;
     }
-    printf("[OK] '%s': extension '%s' matches file type '%s'\n", filename, ext, type);
-    (*n_ok)++;
 }
 
 void show_extensions()
