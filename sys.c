@@ -1,3 +1,7 @@
+/**
+ * Ines Alexandra Ribeiro Machado   2200723
+ * Catia Sofia Ribeiro Antunes      2212492
+ */
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -13,7 +17,7 @@
 #include "debug.h"
 #include "memory.h"
 
-// Performs an exec system call to file over a given file and
+// performs an exec system call to file over a given file and
 // writes the stdout to a file
 void exec_call(char *out_filename, char *filename)
 {
@@ -44,7 +48,7 @@ void exec_call(char *out_filename, char *filename)
     }
 }
 
-// Performs an exec system call to find the files in a given directory
+// performs an exec system call to find the files in a given directory
 // and writes the stdout to a file
 void exec_call_dir(char *out_filename, char *dirname)
 {
@@ -76,7 +80,7 @@ void exec_call_dir(char *out_filename, char *dirname)
     }
 }
 
-// Same function as the one presented on class' signals sheet example 2
+// same function as the one presented on class' signals sheet example 2
 void signal_handler(int signal, siginfo_t *siginfo, void *context)
 {
     (void)context;

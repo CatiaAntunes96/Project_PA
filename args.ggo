@@ -1,10 +1,9 @@
-package "checkFile"
-version "1.0"
-purpose "To identify file types"
-description "checkFile checks a file's type and assesses if it matches the file's name 
-            extension"
+package     "checkFile"
+version     "1.0"
+purpose     "to identify file types"
+description "checkFile checks a file's type and assesses if it matches the file's name extension"
 
 
 option "file"       f "file name"                                           string optional multiple
-option "batch"      b "file containing file names or paths per line"        string optional
+option "batch"      b "text file containing file name or path per line"     string optional
 option "directory"  d "non empty directory, files only"                     string optional

@@ -1,8 +1,9 @@
 /**
+ * Ines Alexandra Ribeiro Machado   2200723
+ * Catia Sofia Ribeiro Antunes      2212492
  * @file main.c
  * @brief CLI checkFile
  * @date 2021-11-06
- * @author Cátia Antunes & Inês Machado
  */
 
 #include <stdio.h>
@@ -72,9 +73,10 @@ int main(int argc, char *argv[])
     }
     else
     {
-        char *student1 = "Ines Machado - 2200723";
-        char *student2 = "Catia Antunes - 2212492";
-        printf("Authors:\n%s\n%s\nFile types supported by checkFile:\n", student1, student2);
+        char *student1 = "2200723 - Ines Machado";
+        char *student2 = "2212492 - Catia Antunes";
+        printf("Authors:\n%s\n%s\n\nFile types supported by checkFile:\n",
+               student1, student2);
         show_extensions();
     }
 

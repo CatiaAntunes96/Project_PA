@@ -25,19 +25,19 @@
 
 #include "args.h"
 
-const char *gengetopt_args_info_purpose = "To identify file types";
+const char *gengetopt_args_info_purpose = "to identify file types";
 
 const char *gengetopt_args_info_usage = "Usage: checkFile [OPTION]...";
 
 const char *gengetopt_args_info_versiontext = "";
 
-const char *gengetopt_args_info_description = "checkFile checks a file's type and assesses if it matches the file's name \n            extension";
+const char *gengetopt_args_info_description = "checkFile checks a file's type and assesses if it matches the file's name\nextension";
 
 const char *gengetopt_args_info_help[] = {
   "  -h, --help              Print help and exit",
   "  -V, --version           Print version and exit",
   "  -f, --file=STRING       file name",
-  "  -b, --batch=STRING      file containing file names or paths per line",
+  "  -b, --batch=STRING      text file containing file name or path per line",
   "  -d, --directory=STRING  non empty directory, files only",
     0
 };
@@ -848,7 +848,7 @@ cmdline_parser_internal (
             goto failure;
         
           break;
-        case 'b':	/* file containing file names or paths per line.  */
+        case 'b':	/* text file containing file name or path per line.  */
         
         
           if (update_arg( (void *)&(args_info->batch_arg), 

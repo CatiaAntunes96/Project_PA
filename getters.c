@@ -1,3 +1,8 @@
+/**
+ * Ines Alexandra Ribeiro Machado   2200723
+ * Catia Sofia Ribeiro Antunes      2212492
+ */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -12,7 +17,7 @@
 #include "debug.h"
 #include "memory.h"
 
-// Copies the filenames from argument array into a new string array
+// copies the filenames from argument array into a new string array
 char **list_files(char **args, int n_args)
 {
     int i;
@@ -20,7 +25,7 @@ char **list_files(char **args, int n_args)
     char **files_array = NULL;
     files_array = (char **)MALLOC(sizeof(char *) * n_args);
 
-    for (i = 0; i < n_args; ++i)
+    for (i = 0; i < n_args; i++)
     {
         files_array[i] = (char *)MALLOC(sizeof(char) * ((int)strlen(args[i]) + 1));
         strcpy(files_array[i], args[i]);
@@ -29,9 +34,9 @@ char **list_files(char **args, int n_args)
     return files_array;
 }
 
-// Used for options -b and -d
-// Reads from a given file and copies the content into a string
-// array returns the number of files read by reference
+// used for options -b and -d
+// reads from a given file, copies the content into a string
+// array and returns the number of files read by reference
 char **read_lines(char *filename, int *total)
 {
     char **files_list = NULL;
@@ -52,7 +57,7 @@ char **read_lines(char *filename, int *total)
         {
             if (ch == '\n')
             {
-                ++n_lines;
+                n_lines++;
             }
         }
 
@@ -64,7 +69,7 @@ char **read_lines(char *filename, int *total)
         ssize_t nread;
         ssize_t j;
 
-        for (i = 0; i < n_lines; ++i)
+        for (i = 0; i < n_lines; i++)
         {
             if ((nread = getline(&line, &len, f)) > 0)
             {
@@ -74,13 +79,13 @@ char **read_lines(char *filename, int *total)
                 // due to strncpy not working properly for the intended
                 // purpose, in this case is to replace the line break with
                 // the string terminator
-                for (j = 0; j < nread && line[j] != '\n'; ++j)
+                for (j = 0; j < nread && line[j] != '\n'; j++)
                 {
                     {
                         files_list[i][j] = line[j];
                     }
                 }
-                for (; j < nread; ++j)
+                for (; j < nread; j++)
                 {
                     files_list[i][j] = '\0';
                 }
@@ -99,7 +104,7 @@ char **read_lines(char *filename, int *total)
     return files_list;
 }
 
-// Looks for a '.' char in a filename and returns a string containing
+// looks for a '.' char in a filename and returns a string containing
 // the characters after the desginated symbol
 char *get_ext_from_filename(char *filename)
 {
@@ -116,7 +121,7 @@ char *get_ext_from_filename(char *filename)
         int n_bytes = (int)strlen(chr);
         str_ext = MALLOC(n_bytes);
 
-        for (i = 0; i < n_bytes; ++i)
+        for (i = 0; i < n_bytes; i++)
         {
             str_ext[i] = chr[i + 1];
         }
@@ -125,7 +130,7 @@ char *get_ext_from_filename(char *filename)
     return str_ext;
 }
 
-// Reads from the file to which the exec's stdout is redirected, copies
+// reads from the file to which the exec's stdout is redirected, copies
 // the line read into a string and returns it
 char *get_str_from_out_file(char *out_filename)
 {
@@ -145,11 +150,11 @@ char *get_str_from_out_file(char *out_filename)
     if ((nread = getline(&line, &len, f)) > 0)
     {
         str_type = (char *)MALLOC(sizeof(char) * ((int)nread));
-        for (j = 0; j < nread && line[j] != '\n'; ++j)
+        for (j = 0; j < nread && line[j] != '\n'; j++)
         {
             str_type[j] = line[j];
         }
-        for (; j < nread; ++j)
+        for (; j < nread; j++)
         {
             str_type[j] = '\0';
         }
@@ -164,7 +169,7 @@ char *get_str_from_out_file(char *out_filename)
     return str_type;
 }
 
-// Looks for <space> in the string passed by parameter and returns
+// looks for 'Space' in the string passed by parameter and returns
 // a string containing the characteres found before that delimiter
 char *get_ext_from_out_str(char *str)
 {
@@ -182,7 +187,7 @@ char *get_ext_from_out_str(char *str)
         int n_bytes = ((int)strlen(str) - (int)strlen(chr));
         file_ext = MALLOC(n_bytes + 1);
 
-        for (i = 0; i < n_bytes + 1; ++i)
+        for (i = 0; i < n_bytes + 1; i++)
         {
             file_ext[i] = tolower(str[i]);
             if (str[i] == 32)
