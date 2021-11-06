@@ -17,23 +17,6 @@
 #include "debug.h"
 #include "memory.h"
 
-// copies the filenames from argument array into a new string array
-char **list_files(char **args, int n_args)
-{
-    int i;
-
-    char **files_array = NULL;
-    files_array = (char **)MALLOC(sizeof(char *) * n_args);
-
-    for (i = 0; i < n_args; i++)
-    {
-        files_array[i] = (char *)MALLOC(sizeof(char) * ((int)strlen(args[i]) + 1));
-        strcpy(files_array[i], args[i]);
-    }
-
-    return files_array;
-}
-
 // used for options -b and -d
 // reads from a given file, copies the content into a string
 // array and returns the number of files read by reference
@@ -170,8 +153,8 @@ char *get_str_from_out_file(char *out_filename)
 }
 
 // looks for 'Space' in the string passed by parameter and returns
-// a string containing the characteres found before that delimiter
-char *get_ext_from_out_str(char *str)
+// a string containing the characters found before that delimiter
+char *get_type_from_out_str(char *str)
 {
     char *chr = strchr(str, 32);
 

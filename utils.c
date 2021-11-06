@@ -41,13 +41,7 @@ void f_option(char **args, int n_args)
 {
     char this_option = 'f';
 
-    // number of files passed by prompt
-    int n_files = n_args;
-
-    // array of filenames
-    char **files_list = list_files(args, n_files);
-
-    process_file(files_list, n_files, this_option);
+    process_file(args, n_args, this_option);
 }
 
 void b_option(char *arg)
@@ -90,10 +84,10 @@ void b_option(char *arg)
 
     // string containing the first characters in a row of the string
     // above, is this case, the delimiter used is Space
-    char *out_file_ext = get_ext_from_out_str(out_file_info);
+    char *out_file_type = get_type_from_out_str(out_file_info);
 
     // validates if the batch file's type is text
-    if (strcmp(out_file_ext, "ascii") != 0 && strcmp(out_file_ext, "utf-8") != 0)
+    if (strcmp(out_file_type, "ascii") != 0 && strcmp(out_file_type, "utf-8") != 0)
     {
         printf("[ERROR] invalid batch file type -- batch must be text file\n");
         exit(C_ERR_BATCH_TYPE);
@@ -132,7 +126,7 @@ void process_file(char **files_list, int n_files, char option)
 {
     char *filename = NULL;
     int i;
-    int mismatch = 0, ok = 0, errors = 0, not_sup = 0;
+    int ok = 0, mismatch = 0, errors = 0, not_sup = 0;
 
     // iteration over filenames' array to process each file
     // at a time
@@ -171,12 +165,12 @@ void process_file(char **files_list, int n_files, char option)
 
         // string containing the first characters in a row of the string
         // above, is this case, the delimiter used is Space
-        char *out_file_ext = get_ext_from_out_str(out_file_info);
+        char *out_file_type = get_type_from_out_str(out_file_info);
 
         // checks if the file type is supported by the app by comparing
-        // the out_file_ext string with an array of globally defined
+        // the out_file_type string with an array of globally defined
         // types
-        if (!type_check(out_file_ext, filename, out_file_info, &not_sup))
+        if (!type_check(out_file_type, filename, out_file_info, &not_sup))
         {
             continue;
         }
@@ -184,9 +178,9 @@ void process_file(char **files_list, int n_files, char option)
         // comparison between the two strings retrieved from the filename's
         // extension passed by the user and the file type's extension obtained
         // from the exec system call
-        cmp_ext_type(extension, out_file_ext, filename, &mismatch, &ok);
+        cmp_ext_type(extension, out_file_type, filename, &mismatch, &ok);
 
-        FREE(filename);
+        //FREE(filename);
     }
 
     if (option == 'b' || option == 'd')

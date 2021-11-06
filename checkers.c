@@ -90,19 +90,18 @@ void dir_check(char *dirname)
 
     int i = 0;
 
-    do
+    while (readdir(dptr) != NULL && i < 3)
     {
-        readdir(dptr);
         i++;
-    } while (i < 2);
+    }
 
     // empty dir validation
     // if the third consecutive readdir's result is NULL it means
     // dir is empty
-    if (readdir(dptr) == NULL)
+    if (i <= 2)
     {
         printf("[ERROR] '%s' directory is empty\n", dirname);
-        exit(C_ERR_EMPTY_FILE);
+        exit(C_ERR_EMPTY_DIR);
     }
 
     if (closedir(dptr) == -1)
@@ -114,12 +113,14 @@ void dir_check(char *dirname)
 // validates if the file's type matches the types supported array
 int type_check(char *str_type, char *filename, char *filetype, int *n_not_supported)
 {
+
     int comp;
     int j = 0;
 
     do
     {
         comp = strcmp(str_type, G_types[j]);
+
         j++;
     } while (comp != 0 && j < NUM_TYPES);
 
@@ -154,7 +155,7 @@ void cmp_ext_type(char *ext, char *type, char *filename, int *n_mism, int *n_ok)
 
 // used in -h option
 // lists the supported file types
-void show_extensions()
+void show_types()
 {
     for (int i = 0; i < NUM_TYPES; i++)
     {

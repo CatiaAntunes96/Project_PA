@@ -77,7 +77,7 @@ int main(int argc, char *argv[])
         char *student2 = "2212492 - Catia Antunes";
         printf("Authors:\n%s\n%s\n\nFile types supported by checkFile:\n",
                student1, student2);
-        show_extensions();
+        show_types();
     }
 
     cmdline_parser_free(&args_info);
