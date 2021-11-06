@@ -87,7 +87,7 @@ void b_option(char *arg)
     char *out_file_type = get_type_from_out_str(out_file_info);
 
     // validates if the batch file's type is text
-    if (strcmp(out_file_type, "ascii") != 0 && strcmp(out_file_type, "utf-8") != 0)
+    if (out_file_type == NULL || (strcmp(out_file_type, "ascii") != 0 && strcmp(out_file_type, "utf-8")) != 0)
     {
         printf("[ERROR] invalid batch file type -- batch must be text file\n");
         exit(C_ERR_BATCH_TYPE);
